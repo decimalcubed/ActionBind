@@ -12,13 +12,13 @@ As such, the documentation at [ContextActionService](https://create.roblox.com/d
 A process hook is used to grant developers control over which inputs are ignored similar to GameProcessed.
 When an input is processed, if it passes the GameProcessed check, a Process hook check is ran, if any of these hooks return true, the input is ignored similarly to GameProcessed.
 
-  -**type**
-  
+  - **type**
+    
     ```lua
     function ActionBind.ProcessHook(input_object: InputObject) -> boolean)
     ```
 
-  -**usage**
+  - **usage**
 
     ```lua
     -- Example process hook that blocks all inputs that are not in the Begin state
@@ -33,7 +33,7 @@ Callback functions that are passed into BindAction and BindActionAtPriority, the
 this is just here to provide a type that is used in other functions.
 Bound callbacks will only be ran when gameprocessed is false, and all registered process hooks return false.
 
-  -**type**
+  - **type**
   
     ```lua
     type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
@@ -45,13 +45,13 @@ A Bind is an object unique to ActionBind, Binds are used internally but are expo
 Binds can be modified after binding to change the keybinds of actions, without re-binding them, allowing for greater quality of life.
 Binds can also be used in place of the action name in UnbindAction, which is faster and in some cases where you have multiple actions bound with the same name, it is also preferable.
 
-  -**type**
+  - **type**
   
     ```lua
     type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
     ```
 
-  -**usage**
+  - **usage**
 
     ```lua
     local function Callback(action_name: string, input_state: Enum.UserInputState, input_object: InputObject)
@@ -68,13 +68,13 @@ Binds can also be used in place of the action name in UnbindAction, which is fas
 Registers a process hook.
 Currently process hooks are not objects, and registering multiple hooks with the same tag will simply overwrite them. This behavior may change, but syntax and usage will remain the same.
 
-  -**type**
+  - **type**
   
     ```lua
     function ActionBind.RegisterProcessHook(tag: string, callback: (input_object: InputObject) -> boolean)
     ```
 
-  -**usage**
+  - **usage**
 
     ```lua
     -- Example process hook that blocks all inputs that are not in the Begin state
@@ -87,13 +87,13 @@ Currently process hooks are not objects, and registering multiple hooks with the
 
 Deregisters a process hook.
 
-  -**type**
+  - **type**
   
     ```lua
     function ActionBind.DeregisterProcessHook(tag: string)
     ```
 
-  -**usage**
+  - **usage**
 
     ```lua
     ActionBind.DeregisterProcessHook("ExampleHook")
@@ -104,13 +104,13 @@ Deregisters a process hook.
 Binds a callback to all passed through inputs at a specific priority, the callback will be ran in order of lowest-highest priority. Returns a Bind
 Callbacks only run when gameprocessed and all registered process hooks are false.
 
-  -**Type**
+  - **Type**
 
     ```lua
     function ActionBind.BindActionAtPriority(action_name: string, callback: BindCallback, create_touch_button: boolean, priority: number, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions)
     ```
 
-  -**usage**
+  - **usage**
 
     See [Roblox documentation](https://create.roblox.com/docs/reference/engine/classes/ContextActionService#BindActionAtPriority) for usage.
 
@@ -119,13 +119,13 @@ Callbacks only run when gameprocessed and all registered process hooks are false
 Binds a callback to all passed through inputs. This function wraps BindActionAtPriority internally. Returns a Bind
 Callbacks only run when gameprocessed and all registered process hooks are false.
 
-  -**Type**
+  - **Type**
 
     ```lua
     function ActionBind.BindAction(action_name: string, callback: BindCallback, create_touch_button: boolean, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions)
     ```
 
-  -**usage**
+  - **usage**
 
     See [Roblox documentation](https://create.roblox.com/docs/reference/engine/classes/ContextActionService#BindAction) for usage.
 
@@ -134,13 +134,13 @@ Callbacks only run when gameprocessed and all registered process hooks are false
 Unbinds an action, clearing it from memory and preventing its callback from running again.
 When passing a string, it will unbind every action which has a matching name.
 
-  -**Type**
+  - **Type**
 
     ```lua
     function ActionBind.UnbindAction(action: string | Bind)
     ```
 
-  -**Usage**
+  - **Usage**
 
     ```lua
     local bind = ActionBind.BindAction("Example", print, false, Enum.KeyCode.F)
@@ -154,13 +154,13 @@ When passing a string, it will unbind every action which has a matching name.
 
 Binds tool activation to a keycode, Whenever a bound key is pressed, the :Activate() method will be called on the players currently equipped tool (If one exists)
 
-  -**Type**
+  - **Type**
 
     ```lua
     function ActionBind.BindActivate(input_type_to_activate: Enum.UserInputType, ...: Enum.KeyCode)
     ```
 
-  -**usage**
+  - **usage**
 
     See [Roblox documentation](https://create.roblox.com/docs/reference/engine/classes/ContextActionService#BindActivate) for usage.
 
@@ -168,12 +168,12 @@ Binds tool activation to a keycode, Whenever a bound key is pressed, the :Activa
 
 Unbinds a keycode from tool activation.
 
-  -**Type**
+  - **Type**
 
     ```lua
     function ActionBind.UnbindActivate(input_type_to_activate: Enum.UserInputType, key: Enum.KeyCode)
     ```
 
-  -**usage**
+  - **usage**
 
     See [Roblox documentation](https://create.roblox.com/docs/reference/engine/classes/ContextActionService#UnbindActivate) for usage.
