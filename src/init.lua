@@ -83,17 +83,17 @@ local function CleanBind(bind: Bind)
 end
 
 -- Wraps BindActionAtPriority
-function ActionBind.BindAction(action_name: string, bind_function: (...any) -> (...any), create_touch_button: boolean, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions): Bind
+function ActionBind.BindAction(action_name: string, callback: (...any) -> (...any), create_touch_button: boolean, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions): Bind
 
-	return ActionBind.BindActionAtPriority(action_name, bind_function, create_touch_button, 99999999, ...) -- magic number
+	return ActionBind.BindActionAtPriority(action_name, callback, create_touch_button, 99999999, ...) -- magic number
 end
 
 -- Binds an action to a UserInputType or KeyCode at a set priority
-function ActionBind.BindActionAtPriority(action_name: string, bind_function: (...any) -> (...any), create_touch_button: boolean, priority: number, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions): Bind
+function ActionBind.BindActionAtPriority(action_name: string, callback: (...any) -> (...any), create_touch_button: boolean, priority: number, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions): Bind
 	
 	local bind = {
 		ActionName = action_name;
-		ActionFunction = bind_function;
+		ActionFunction = callback;
 		ActionInputs = {...};
 	}
 
