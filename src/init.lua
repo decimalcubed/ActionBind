@@ -47,7 +47,7 @@ local function DoBind(input: InputObject)
 		end
 	end
 	
-	-- Sort every bind by priority --TODO this can msot likely be optimized
+	-- Sort every bind by priority --TODO this can most likely be optimized
 	table.sort(execute_binds, SortBindsByPriority)
 	
 	-- Execute all binds
