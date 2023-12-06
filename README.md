@@ -18,7 +18,7 @@ When an input is processed, if it passes the GameProcessed check, a Process hook
     function ActionBind.ProcessHook(input_object: InputObject) -> boolean)
     ```
 
-  - **usage**
+  - **Usage**
 
     ```lua
     -- Example process hook that blocks all inputs that are not in the Begin state
@@ -53,7 +53,7 @@ Binds can also be used in place of the action name in UnbindAction, which is fas
     type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
     ```
 
-  - **usage**
+  - **Usage**
 
     ```lua
     local function Callback(action_name: string, input_state: Enum.UserInputState, input_object: InputObject)
@@ -77,7 +77,7 @@ Currently process hooks are not objects, and registering multiple hooks with the
     function ActionBind.RegisterProcessHook(tag: string, callback: (input_object: InputObject) -> boolean)
     ```
 
-  - **usage**
+  - **Usage**
 
     ```lua
     -- Example process hook that blocks all inputs that are not in the Begin state
@@ -97,7 +97,7 @@ Deregisters a process hook.
     function ActionBind.DeregisterProcessHook(tag: string)
     ```
 
-  - **usage**
+  - **Usage**
 
     ```lua
     ActionBind.DeregisterProcessHook("ExampleHook")
@@ -115,7 +115,7 @@ Callbacks only run when gameprocessed and all registered process hooks are false
     function ActionBind.BindActionAtPriority(action_name: string, callback: BindCallback, create_touch_button: boolean, priority: number, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions)
     ```
 
-  - **usage**
+  - **Usage**
 
     See [Roblox documentation](https://create.roblox.com/docs/reference/engine/classes/ContextActionService#BindActionAtPriority) for usage.
 ---
@@ -131,7 +131,7 @@ Callbacks only run when gameprocessed and all registered process hooks are false
     function ActionBind.BindAction(action_name: string, callback: BindCallback, create_touch_button: boolean, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions)
     ```
 
-  - **usage**
+  - **Usage**
 
     See [Roblox documentation](https://create.roblox.com/docs/reference/engine/classes/ContextActionService#BindAction) for usage.
 ---
@@ -168,7 +168,7 @@ Binds tool activation to a keycode, Whenever a bound key is pressed, the :Activa
     function ActionBind.BindActivate(input_type_to_activate: Enum.UserInputType, ...: Enum.KeyCode)
     ```
 
-  - **usage**
+  - **Usage**
 
     See [Roblox documentation](https://create.roblox.com/docs/reference/engine/classes/ContextActionService#BindActivate) for usage.
 ---
@@ -183,6 +183,6 @@ Unbinds a keycode from tool activation.
     function ActionBind.UnbindActivate(input_type_to_activate: Enum.UserInputType, key: Enum.KeyCode)
     ```
 
-  - **usage**
+  - **Usage**
 
     See [Roblox documentation](https://create.roblox.com/docs/reference/engine/classes/ContextActionService#UnbindActivate) for usage.
