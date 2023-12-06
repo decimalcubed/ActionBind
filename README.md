@@ -66,9 +66,9 @@ Binds can also be used in place of the action name in UnbindAction, which is fas
     ```lua
     type Bind = {
     	ActionPriority: number;
-	ActionName: string;
-	ActionFunction: (...any) -> (...any);
-	ActionInputs: {Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions};
+    	ActionName: string;
+    	ActionFunction: (...any) -> (...any);
+    	ActionInputs: {Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions};
     }
     ```
 ---
