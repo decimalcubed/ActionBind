@@ -20,7 +20,7 @@ local binds: {Bind} = {}
 local function DoBind(input: InputObject)
 
 	for _, binded_action in binds do
-
+		
 		if table.find(binded_action.ActionInputs, input.KeyCode) or table.find(binded_action.ActionInputs, input.UserInputType) then
 
 			binded_action.ActionFunction(binded_action.ActionName, input.UserInputState, input)
@@ -114,8 +114,12 @@ function ActionBind.BindActionAtPriority(action_name: string, callback: ActionCa
 		ActionFunction = callback;
 		ActionInputs = inputs;
 	}
+	
+	print(inputs)
+	print(bind)
 
-	table.insert(binds, priority, bind)
+	--table.insert(binds, priority, bind)
+	table.insert(binds, bind)
 	--TODO implement touch button
 
 	return bind
