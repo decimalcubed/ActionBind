@@ -26,6 +26,7 @@ When an input is processed, if it passes the GameProcessed check, a Process hook
       return input_object.UserInputState ~= Enum.UserInputState.Begin
     end)
     ```
+---
 
 ### Type: BindCallback
 
@@ -38,6 +39,7 @@ Bound callbacks will only be ran when gameprocessed is false, and all registered
     ```lua
     type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
     ```
+---
 
 ### Type: Bind
 
@@ -62,6 +64,7 @@ Binds can also be used in place of the action name in UnbindAction, which is fas
       end
     end
     ```
+---
 
 ### RegisterProcessHook()
 
@@ -82,6 +85,7 @@ Currently process hooks are not objects, and registering multiple hooks with the
 	    return input_object.UserInputState ~= Enum.UserInputState.Begin
     end)
     ```
+---
 
 ### DeregisterProcessHook()
 
@@ -98,6 +102,7 @@ Deregisters a process hook.
     ```lua
     ActionBind.DeregisterProcessHook("ExampleHook")
     ```
+---
 
 ### BindActionAtPriority()
 
@@ -113,6 +118,7 @@ Callbacks only run when gameprocessed and all registered process hooks are false
   - **usage**
 
     See [Roblox documentation](https://create.roblox.com/docs/reference/engine/classes/ContextActionService#BindActionAtPriority) for usage.
+---
 
 ### BindAction()
 
@@ -128,6 +134,7 @@ Callbacks only run when gameprocessed and all registered process hooks are false
   - **usage**
 
     See [Roblox documentation](https://create.roblox.com/docs/reference/engine/classes/ContextActionService#BindAction) for usage.
+---
 
 ### UnbindAction()
 
@@ -149,6 +156,7 @@ When passing a string, it will unbind every action which has a matching name.
     -- Or
     ActionBind.UnbindAction("Example")
     ```
+---
 
 ### BindActivate()
 
@@ -163,6 +171,7 @@ Binds tool activation to a keycode, Whenever a bound key is pressed, the :Activa
   - **usage**
 
     See [Roblox documentation](https://create.roblox.com/docs/reference/engine/classes/ContextActionService#BindActivate) for usage.
+---
 
 ### UnbindActivate()
 
