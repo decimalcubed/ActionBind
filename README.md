@@ -3,8 +3,10 @@ A wrapper for [UserInputService](https://create.roblox.com/docs/reference/engine
 
 # About
 ActionBind is currently not finished, and may have issues. It also does not contain every method that ContextActionService does, though most will be added when needed.
+
 ActionBind is designed to be a drag-and-drop replacement for [ContextActionService](https://create.roblox.com/docs/reference/engine/classes/ContextActionService), requiring minimal syntax changes.
 As such, the documentation at [ContextActionService](https://create.roblox.com/docs/reference/engine/classes/ContextActionService) can be used in place of ActionBind's own documentation, as it provides more concise descriptions.
+
 ---
 
 ### Feature: Process hook
@@ -12,7 +14,7 @@ As such, the documentation at [ContextActionService](https://create.roblox.com/d
 A process hook is used to grant developers control over which inputs are ignored similar to GameProcessed.
 When an input is processed, if it passes the GameProcessed check, a Process hook check is ran, if any of these hooks return true, the input is ignored similarly to GameProcessed.
 
-  - **type**
+  - **Type**
     
     ```lua
     function ActionBind.ProcessHook(input_object: InputObject) -> boolean)
@@ -34,7 +36,7 @@ Callback functions that are passed into BindAction and BindActionAtPriority, the
 this is just here to provide a type that is used in other functions.
 Bound callbacks will only be ran when gameprocessed is false, and all registered process hooks return false.
 
-  - **type**
+  - **Type**
   
     ```lua
     type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
@@ -47,7 +49,7 @@ A Bind is an object unique to ActionBind, Binds are used internally but are expo
 Binds can be modified after binding to change the keybinds of actions, without re-binding them, allowing for greater quality of life.
 Binds can also be used in place of the action name in UnbindAction, which is faster and in some cases where you have multiple actions bound with the same name, it is also preferable.
 
-  - **type**
+  - **Type**
   
     ```lua
     type Bind = {
@@ -75,7 +77,7 @@ Binds can also be used in place of the action name in UnbindAction, which is fas
 Registers a process hook.
 Currently process hooks are not objects, and registering multiple hooks with the same tag will simply overwrite them. This behavior may change, but syntax and usage will remain the same.
 
-  - **type**
+  - **Type**
   
     ```lua
     function ActionBind.RegisterProcessHook(tag: string, callback: (input_object: InputObject) -> boolean)
@@ -95,7 +97,7 @@ Currently process hooks are not objects, and registering multiple hooks with the
 
 Deregisters a process hook.
 
-  - **type**
+  - **Type**
   
     ```lua
     function ActionBind.DeregisterProcessHook(tag: string)
