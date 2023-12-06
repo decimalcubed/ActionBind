@@ -6,6 +6,7 @@ ActionBind is currently not finished, and may have issues. It also does not cont
 
 ActionBind is designed to be a drag-and-drop replacement for [ContextActionService](https://create.roblox.com/docs/reference/engine/classes/ContextActionService), requiring minimal syntax changes.
 As such, the documentation at [ContextActionService](https://create.roblox.com/docs/reference/engine/classes/ContextActionService) can be used in place of ActionBind's own documentation, as it provides more concise descriptions.
+---
 
 ### Feature: Process hook
 
