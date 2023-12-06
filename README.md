@@ -3,7 +3,6 @@ A wrapper for [UserInputService](https://create.roblox.com/docs/reference/engine
 
 # About
 ActionBind is currently not finished, and may have issues. It also does not contain every method that ContextActionService does, though most will be added when needed.
-
 ActionBind is designed to be a drag-and-drop replacement for [ContextActionService](https://create.roblox.com/docs/reference/engine/classes/ContextActionService), requiring minimal syntax changes.
 As such, the documentation at [ContextActionService](https://create.roblox.com/docs/reference/engine/classes/ContextActionService) can be used in place of ActionBind's own documentation, as it provides more concise descriptions.
 ---
