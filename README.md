@@ -50,7 +50,11 @@ Binds can also be used in place of the action name in UnbindAction, which is fas
   - **type**
   
     ```lua
-    type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
+    type Bind = {
+	ActionName: string;
+	ActionFunction: (...any) -> (...any);
+	ActionInputs: {Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions};
+    }
     ```
 
   - **Usage**
