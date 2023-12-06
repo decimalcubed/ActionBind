@@ -41,6 +41,18 @@ Bound callbacks will only be ran when gameprocessed is false, and all registered
     ```lua
     type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
     ```
+    
+  - **Usage**
+
+    ```lua
+    local function Callback(action_name: string, input_state: Enum.UserInputState, input_object: InputObject)
+
+      if action_name == "Jump" and input_state == Enum.UserInputState.Begin then
+
+        print("Jump")
+      end
+    end
+    ```
 ---
 
 ### Type: Bind
@@ -57,18 +69,6 @@ Binds can also be used in place of the action name in UnbindAction, which is fas
 	ActionFunction: (...any) -> (...any);
 	ActionInputs: {Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions};
     }
-    ```
-
-  - **Usage**
-
-    ```lua
-    local function Callback(action_name: string, input_state: Enum.UserInputState, input_object: InputObject)
-
-      if action_name == "Jump" and input_state == Enum.UserInputState.Begin then
-
-        print("Jump")
-      end
-    end
     ```
 ---
 
