@@ -5,6 +5,8 @@ local ActionBind = {}
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
+type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
+
 type Bind = {
 	ActionName: string;
 	ActionFunction: (...any) -> (...any);
@@ -83,13 +85,13 @@ local function CleanBind(bind: Bind)
 end
 
 -- Wraps BindActionAtPriority
-function ActionBind.BindAction(action_name: string, callback: (...any) -> (...any), create_touch_button: boolean, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions): Bind
+function ActionBind.BindAction(action_name: string, callback: ActionCallback, create_touch_button: boolean, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions): Bind
 
 	return ActionBind.BindActionAtPriority(action_name, callback, create_touch_button, 99999999, ...) -- magic number
 end
 
 -- Binds an action to a UserInputType or KeyCode at a set priority
-function ActionBind.BindActionAtPriority(action_name: string, callback: (...any) -> (...any), create_touch_button: boolean, priority: number, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions): Bind
+function ActionBind.BindActionAtPriority(action_name: string, callback: ActionCallback, create_touch_button: boolean, priority: number, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions): Bind
 	
 	local bind = {
 		ActionName = action_name;
