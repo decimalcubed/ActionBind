@@ -8,23 +8,52 @@ local UserInputService = game:GetService("UserInputService")
 type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
 
 type Bind = {
+	ActionPriority: number;
 	ActionName: string;
 	ActionFunction: (...any) -> (...any);
-	ActionInputs: {Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions}; --TODO this could be dictionary based
+	ActionInputs: {Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions};
 }
 
 local processHooks: {[string]: (input_object: InputObject) -> boolean} = {}
 local activateBinds: {Enum.KeyCode} = {}
 local binds: {Bind} = {}
 
+local function KeycodeFromPlayerAction(player_action: Enum.PlayerActions)
+
+	-- TODO make an implementation of this that is console / mobile compatible, and provides support for AZERTY keyboards
+	return if player_action == Enum.PlayerActions.CharacterJump then Enum.KeyCode.Space
+		elseif player_action == Enum.PlayerActions.CharacterForward then Enum.KeyCode.W
+		elseif player_action == Enum.PlayerActions.CharacterLeft then Enum.KeyCode.A
+		elseif player_action == Enum.PlayerActions.CharacterRight then Enum.KeyCode.D
+		elseif player_action == Enum.PlayerActions.CharacterBackward then Enum.KeyCode.S
+		else Enum.KeyCode.Unknown
+end
+
+local function SortBindsByPriority(a: Bind, b: Bind)
+
+	return a.ActionPriority < b.ActionPriority
+end
+
 local function DoBind(input: InputObject)
 
+	local execute_binds: {Bind} = {}
+
+	-- Get a list of every bind to run
 	for _, binded_action in binds do
-		
+
 		if table.find(binded_action.ActionInputs, input.KeyCode) or table.find(binded_action.ActionInputs, input.UserInputType) then
 
-			binded_action.ActionFunction(binded_action.ActionName, input.UserInputState, input)
+			table.insert(execute_binds, binded_action)
 		end
+	end
+
+	-- Sort every bind by priority --TODO this can most likely be optimized
+	table.sort(execute_binds, SortBindsByPriority)
+
+	-- Execute all binds
+	for _, binded_action in execute_binds do
+
+		binded_action.ActionFunction(binded_action.ActionName, input.UserInputState, input)
 	end
 
 	-- Check for activated binds
@@ -87,34 +116,28 @@ end
 -- Wraps BindActionAtPriority
 function ActionBind.BindAction(action_name: string, callback: ActionCallback, create_touch_button: boolean, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions): Bind
 
-	return ActionBind.BindActionAtPriority(action_name, callback, create_touch_button, 99999999, ...) -- magic number
+	return ActionBind.BindActionAtPriority(action_name, callback, create_touch_button, math.huge, ...)
 end
 
 -- Binds an action to a UserInputType or KeyCode at a set priority
 function ActionBind.BindActionAtPriority(action_name: string, callback: ActionCallback, create_touch_button: boolean, priority: number, ...: Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions): Bind
 
-	local inputs = {...}
+	local bind = {
+		ActionPriority = priority;
+		ActionName = action_name;
+		ActionFunction = callback;
+		ActionInputs = {...};
+	}
 
-	--TODO find an actual implementation for this that works with AZERTY keyboards (cause this sucks and doesnt work)
-	for x, input in inputs do
+	-- Convert playeractions to their respective keycodes. TODO this needs to be redone every time the players input type changes
+	for x, input in bind.ActionInputs do
 
 		if input.EnumType == Enum.PlayerActions then
 
-			inputs[x] = if input == Enum.PlayerActions.CharacterJump then Enum.KeyCode.Space
-				elseif input == Enum.PlayerActions.CharacterForward then Enum.KeyCode.W
-				elseif input == Enum.PlayerActions.CharacterLeft then Enum.KeyCode.A
-				elseif input == Enum.PlayerActions.CharacterRight then Enum.KeyCode.D
-				elseif input == Enum.PlayerActions.CharacterBackward then Enum.KeyCode.S
-				else Enum.KeyCode.Unknown
+			bind.ActionInputs[x] = KeycodeFromPlayerAction(input :: any) -- Any cast since the if statement here doesnt actually type refine
 		end
 	end
 
-	local bind = {
-		ActionName = action_name;
-		ActionFunction = callback;
-		ActionInputs = inputs;
-	}
-	
 	table.insert(binds, bind)
 	--TODO implement touch button
 
