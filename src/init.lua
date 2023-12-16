@@ -2,12 +2,13 @@
 
 local ActionBind = {}
 
+local PlayersService = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
-type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
+export type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
 
-type Bind = {
+export type Bind = {
 	ActionPriority: number;
 	ActionName: string;
 	ActionFunction: (...any) -> (...any);
@@ -17,6 +18,7 @@ type Bind = {
 local processHooks: {[string]: (input_object: InputObject) -> boolean} = {}
 local activateBinds: {Enum.KeyCode} = {}
 local binds: {Bind} = {}
+local localPlayer = PlayersService.LocalPlayer
 
 local function KeycodeFromPlayerAction(player_action: Enum.PlayerActions)
 
@@ -57,13 +59,18 @@ local function DoBind(input: InputObject)
 	end
 
 	-- Check for activated binds
-	if input.UserInputState == Enum.UserInputState.Begin then
+	local character = localPlayer.Character
+	if character and input.UserInputState == Enum.UserInputState.Begin then
+		
+		local tool = character:FindFirstChildWhichIsA("Tool")
+		if tool then
+			
+			for _, key in activateBinds do
 
-		for _, key in activateBinds do
+				if input.KeyCode == key then
 
-			if input.KeyCode == key then
-
-				--TODO fire :Activate()
+					tool:Activate() --TODO make sure this works with manualactivationonly cause its a stupid property
+				end
 			end
 		end
 	end
