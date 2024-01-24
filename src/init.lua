@@ -203,7 +203,7 @@ function ActionBind.DeregisterProcessHook(tag: string)
 end
 
 -- Simulates an input as if a player had actually done the input, is still affected by input hooks
-function ActionBind.c(delta: Vector3, keycode: Enum.KeyCode, position: Vector3, input_state: Enum.UserInputState, input_type: Enum.UserInputType)
+function ActionBind.SimulateInput(delta: Vector3, keycode: Enum.KeyCode, position: Vector3, input_state: Enum.UserInputState, input_type: Enum.UserInputType)
 	
 	local fake_input: InputObject = table.freeze({
 		
