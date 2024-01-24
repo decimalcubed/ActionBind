@@ -5,6 +5,7 @@ local ActionBind = {}
 local PlayersService = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
+local runtimeServer = game:GetService("RunService"):IsServer()
 
 export type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
 
@@ -69,7 +70,7 @@ local function DoBind(input: InputObject)
 
 				if input.KeyCode == key then
 
-					tool:Activate() --TODO make sure this works with manualactivationonly cause its a stupid property
+					tool:Activate()
 				end
 			end
 		end
@@ -201,6 +202,24 @@ function ActionBind.DeregisterProcessHook(tag: string)
 	processHooks[tag] = nil
 end
 
+-- Simulates an input as if a player had actually done the input, is still affected by input hooks
+function ActionBind.c(delta: Vector3, keycode: Enum.KeyCode, position: Vector3, input_state: Enum.UserInputState, input_type: Enum.UserInputType)
+	
+	local fake_input: InputObject = table.freeze({
+		
+		Delta = delta;
+		KeyCode = keycode;
+		Position = position;
+		UserInputState = input_state;
+		UserInputType = input_type;
+	}) :: any
+	
+	if not CheckInputHook(fake_input) then
+
+		DoBind(fake_input)
+	end
+end
+
 --[[
 -- Example process hook that blocks all inputs that are not in the Begin state
 ActionBind.RegisterProcessHook("ExampleHook", function(input_object: InputObject)
@@ -209,8 +228,11 @@ ActionBind.RegisterProcessHook("ExampleHook", function(input_object: InputObject
 end)
 ]]
 
-UserInputService.InputChanged:Connect(OnInputChanged)
-UserInputService.InputBegan:Connect(OnInputChanged)
-UserInputService.InputEnded:Connect(OnInputChanged)
+if not runtimeServer then
+	
+	UserInputService.InputChanged:Connect(OnInputChanged)
+	UserInputService.InputBegan:Connect(OnInputChanged)
+	UserInputService.InputEnded:Connect(OnInputChanged)
+end
 
 return ActionBind
