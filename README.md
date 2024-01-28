@@ -15,20 +15,21 @@ A process hook is used to grant developers control over which inputs are ignored
 When an input is processed, if it passes the GameProcessed check, a Process hook check is ran, if any of these hooks return true, the input is ignored similarly to GameProcessed.
 
   - **Type**
-    
+  
     ```lua
-    function ActionBind.ProcessHook(input_object: InputObject) -> boolean)
+    type ProcessHook = (input_object: InputObject, was_queued: boolean) -> boolean;
     ```
 
   - **Usage**
 
     ```lua
-    -- Example process hook that blocks all inputs that are not in the Begin state
-    ActionBind.RegisterProcessHook("ExampleHook", function(input_object: InputObject)
-      return input_object.UserInputState ~= Enum.UserInputState.Begin
+    -- Example process hook that blocks all inputs that are not in the Begin state that were also queued
+    ActionBind.RegisterProcessHook("ExampleHook", function(input_object: InputObject, was_queued: boolean)
+      return input_object.UserInputState ~= Enum.UserInputState.Begin and was_queued
     end)
     ```
 ---
+
 
 ### Type: BindCallback
 
@@ -45,13 +46,10 @@ Bound callbacks will only be ran when gameprocessed is false, and all registered
   - **Usage**
 
     ```lua
-    local function Callback(action_name: string, input_state: Enum.UserInputState, input_object: InputObject)
-
-      if action_name == "Jump" and input_state == Enum.UserInputState.Begin then
-
-        print("Jump")
-      end
-    end
+    -- Example process hook that blocks all inputs that are not in the Begin state that were also queued
+    ActionBind.RegisterProcessHook("ExampleHook", function(input_object: InputObject, was_queued: boolean)
+      return input_object.UserInputState ~= Enum.UserInputState.Begin and was_queued
+    end)
     ```
 ---
 
