@@ -173,7 +173,7 @@ Triggers a queue.
   - **Type**
   
     ```lua
-    function ActionBind.TriggerQueue(tag: string, queue_trigger: QueueTrigger)
+    function ActionBind.TriggerQueue(tag: string, queue_trigger: QueueTrigger?)
     ```
 
   - **Usage**
