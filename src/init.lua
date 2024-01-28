@@ -9,6 +9,10 @@ local runtimeServer = game:GetService("RunService"):IsServer()
 
 export type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
 
+export type ProcessHook = (input_object: InputObject, was_queued: boolean) -> boolean;
+export type QueueHook = (input_object: InputObject) -> boolean;
+export type QueueTrigger = (input_object: InputObject, time_triggered: number) -> boolean;
+
 export type Bind = {
 	ActionPriority: number;
 	ActionName: string;
@@ -16,7 +20,12 @@ export type Bind = {
 	ActionInputs: {Enum.KeyCode | Enum.UserInputType | Enum.PlayerActions};
 }
 
-local processHooks: {[string]: (input_object: InputObject) -> boolean} = {}
+local processHooks: {[string]: ProcessHook} = {}
+
+local queueHooks: {[string]: QueueHook} = {}
+local queueInputs: {[string]: {InputObject}} = {}
+local queueInputTimes: {[string]: {number}} = {}
+
 local activateBinds: {Enum.KeyCode} = {}
 local binds: {Bind} = {}
 local localPlayer = PlayersService.LocalPlayer
@@ -37,7 +46,32 @@ local function SortBindsByPriority(a: Bind, b: Bind)
 	return a.ActionPriority < b.ActionPriority
 end
 
-local function DoBind(input: InputObject)
+local function DoBind(input: InputObject, bypass_queue: boolean)
+	
+	-- Check queue hooks
+	if not bypass_queue then
+		
+		for queue, hook in queueHooks do
+
+			if hook(input) then
+				
+				local fake_input: InputObject = table.freeze({
+
+					Delta = input.Delta;
+					KeyCode = input.KeyCode;
+					Position = input.Position;
+					UserInputState = input.UserInputState;
+					UserInputType = input.UserInputType;
+				}) :: any -- The input has to be recreated so that the input state doesnt change
+				
+				local id = #queueInputs[queue] + 1
+				queueInputs[queue][id] = fake_input
+				queueInputTimes[queue][id] = os.clock()
+
+				return
+			end
+		end
+	end
 
 	local execute_binds: {Bind} = {}
 
@@ -77,12 +111,12 @@ local function DoBind(input: InputObject)
 	end
 end
 
-local function CheckInputHook(input: InputObject)
+local function CheckInputHook(input: InputObject, was_queued: boolean)
 
 	-- Check process hooks
 	for _, callback in processHooks do
 
-		if callback(input) then
+		if callback(input, was_queued) then
 
 			return true
 		end
@@ -93,25 +127,25 @@ end
 
 local function OnInputBegin(input: InputObject, game_processed: boolean)
 
-	if not (game_processed or CheckInputHook(input)) then
+	if not (game_processed or CheckInputHook(input, false)) then
 
-		DoBind(input)
+		DoBind(input, false)
 	end
 end
 
 local function OnInputEnd(input: InputObject, game_processed: boolean)
 
-	if not (game_processed or CheckInputHook(input)) then
+	if not (game_processed or CheckInputHook(input, false)) then
 
-		DoBind(input)
+		DoBind(input, false)
 	end
 end
 
 local function OnInputChanged(input: InputObject, game_processed: boolean)
 
-	if not (game_processed or CheckInputHook(input)) then
+	if not (game_processed or CheckInputHook(input, false)) then
 
-		DoBind(input)
+		DoBind(input, false)
 	end
 end
 
@@ -190,8 +224,8 @@ function ActionBind.UnbindActivate(input_type_to_activate: Enum.UserInputType, k
 	end
 end
 
--- Hooking system for custom gameprocessed implementations
-function ActionBind.RegisterProcessHook(tag: string, callback: (input_object: InputObject) -> boolean)
+-- Registers a ho
+function ActionBind.RegisterProcessHook(tag: string, callback: ProcessHook)
 
 	processHooks[tag] = callback
 end
@@ -202,7 +236,7 @@ function ActionBind.DeregisterProcessHook(tag: string)
 	processHooks[tag] = nil
 end
 
--- Simulates an input as if a player had actually done the input, is still affected by input hooks
+-- Simulates an input as if a player had actually done the input, is still affected by input hooks --TODO make this so they can bypass the queue and hooks
 function ActionBind.SimulateInput(delta: Vector3, keycode: Enum.KeyCode, position: Vector3, input_state: Enum.UserInputState, input_type: Enum.UserInputType)
 	
 	local fake_input: InputObject = table.freeze({
@@ -214,10 +248,48 @@ function ActionBind.SimulateInput(delta: Vector3, keycode: Enum.KeyCode, positio
 		UserInputType = input_type;
 	}) :: any
 	
-	if not CheckInputHook(fake_input) then
+	if not CheckInputHook(fake_input, false) then
 
-		DoBind(fake_input)
+		DoBind(fake_input, false)
 	end
+end
+
+-- Hooking system for queues
+function ActionBind.RegisterQueueHook(tag: string, callback: QueueHook)
+
+	queueHooks[tag] = callback
+	queueInputs[tag] = {}
+	queueInputTimes[tag] = {}
+end
+
+function ActionBind.TriggerQueue(tag: string, queue_trigger: QueueTrigger?)
+	
+	assert(queueInputs[tag], `Queue {tag} does not exist`)
+	
+	local queue_inputs = queueInputs[tag]
+	local queue_times = queueInputTimes[tag]
+	
+	for x, input in queue_inputs do
+		
+		local trigger_true = if queue_trigger then queue_trigger(input, queue_times[x]) else true
+		queue_inputs[x] = nil
+		queue_times[x] = nil
+		
+		if trigger_true or CheckInputHook(input, true) then
+			
+			continue
+		end
+		
+		DoBind(input, true)
+	end
+end
+
+-- Unregisters a queue hook
+function ActionBind.DeregisterQueueHook(tag: string)
+
+	queueHooks[tag] = nil
+	queueInputs[tag] = nil
+	queueInputTimes[tag] = nil
 end
 
 --[[
