@@ -30,6 +30,36 @@ When an input is processed, if it passes the GameProcessed check, a Process hook
     ```
 ---
 
+### Feature: Queue hooks
+
+A queue hook is a feature designed to simplify input queuing for developers in a performant way.
+When an input is processed, if it passes all process checks, a Queue hook check is ran, if any of these hooks return true, the input will be ignored and put into the hooks queue.
+When a queue is triggered, it runs a QueueTrigger callback (if any is passed) on every input, if the trigger returns true, the input will be ignored.
+
+  - **Type**
+  
+    ```lua
+    type QueueHook = (input_object: InputObject) -> boolean;
+    ```
+    ```lua
+    type QueueTrigger = (input_object: InputObject, time_queued: number) -> boolean;
+    ```
+    
+  - **Usage**
+
+    ```lua
+    -- Example queue hook that queues all jump inputs when the player is in the air
+    ActionBind.RegisterQueueHook("ExampleQueue", function(input_object: InputObject)
+      return input_object.KeyCode == Enum.KeyCode.Space and player_in_air
+    end)
+
+    -- Trigger the example queue, but only trigger binds that were executed less than 100ms ago
+    ActionBind.TriggerQueue("ExampleQueue", function(input_object: InputObject, queued_time: number)
+      return os.clock() - queued_time > 0.1
+    end)
+    ```
+---
+
 
 ### Type: BindCallback
 
