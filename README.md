@@ -35,6 +35,7 @@ When an input is processed, if it passes the GameProcessed check, a Process hook
 A queue hook is a feature designed to simplify input queuing for developers in a performant way.
 When an input is processed, if it passes all process checks, a Queue hook check is ran, if any of these hooks return true, the input will be ignored and put into the hooks queue.
 When a queue is triggered, it runs a QueueTrigger callback (if any is passed) on every input, if the trigger returns true, the input will be ignored.
+If a queue is deregistered, all the inputs within are lost.
 
   - **Type**
   
@@ -76,10 +77,15 @@ Bound callbacks will only be ran when gameprocessed is false, and all registered
   - **Usage**
 
     ```lua
-    -- Example process hook that blocks all inputs that are not in the Begin state that were also queued
-    ActionBind.RegisterProcessHook("ExampleHook", function(input_object: InputObject, was_queued: boolean)
-      return input_object.UserInputState ~= Enum.UserInputState.Begin and was_queued
-    end)
+    local function ActionCallback(action_name: string, input_state: Enum.UserInputState, input_object: InputObject)
+	
+	if input_state ~= Enum.UserInputState.Begin then
+		
+		return
+	end
+	
+	print(`{action_name} began with key {input_object.KeyCode}`)
+    end
     ```
 ---
 
@@ -109,7 +115,7 @@ Currently process hooks are not objects, and registering multiple hooks with the
   - **Type**
   
     ```lua
-    function ActionBind.RegisterProcessHook(tag: string, callback: (input_object: InputObject) -> boolean)
+    function ActionBind.RegisterProcessHook(tag: string, callback: ProcessHook)
     ```
 
   - **Usage**
@@ -136,6 +142,64 @@ Deregisters a proccess hook.
 
     ```lua
     ActionBind.DeregisterProcessHook("ExampleHook")
+    ```
+---
+
+### RegisterQueueHook()
+
+Registers a queue hook.
+Currently queue hooks are not objects, and registering multiple hooks with the same tag will simply overwrite them. This behavior may change, but syntax and usage will remain the same.
+
+  - **Type**
+  
+    ```lua
+    function ActionBind.RegisterQueueHook(tag: string, callback: QueueHook)
+    ```
+
+  - **Usage**
+
+    ```lua
+     -- Example queue hook that queues all jump inputs when the player is in the air
+    ActionBind.RegisterQueueHook("ExampleQueue", function(input_object: InputObject)
+      return input_object.KeyCode == Enum.KeyCode.Space and player_in_air
+    end)
+    ```
+---
+
+### TriggerQueue()
+
+Triggers a queue.
+
+  - **Type**
+  
+    ```lua
+    function ActionBind.TriggerQueue(tag: string, queue_trigger: QueueTrigger)
+    ```
+
+  - **Usage**
+
+    ```lua
+    -- Trigger the example queue, but only trigger binds that were executed less than 100ms ago
+    ActionBind.TriggerQueue("ExampleQueue", function(input_object: InputObject, queued_time: number)
+      return os.clock() - queued_time > 0.1
+    end)
+    ```
+---
+
+### DeregisterQueueHook()
+
+Deregisters a queue hook.
+
+  - **Type**
+  
+    ```lua
+    function ActionBind.DeregisterQueueHook(tag: string)
+    ```
+
+  - **Usage**
+
+    ```lua
+    ActionBind.DeregisterQueueHook("ExampleQueue")
     ```
 ---
 
