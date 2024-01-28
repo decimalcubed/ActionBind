@@ -94,24 +94,20 @@ Currently process hooks are not objects, and registering multiple hooks with the
     ```
 ---
 
-### RegisterProcessHook()
+### DeregisterProcessHook()
 
-Registers a process hook.
-Currently process hooks are not objects, and registering multiple hooks with the same tag will simply overwrite them. This behavior may change, but syntax and usage will remain the same.
+Deregisters a proccess hook.
 
   - **Type**
   
     ```lua
-    function ActionBind.RegisterProcessHook(tag: string, callback: (input_object: InputObject) -> boolean)
+    function ActionBind.DeregisterProcessHook(tag: string)
     ```
 
   - **Usage**
 
     ```lua
-    -- Example process hook that blocks all inputs that are not in the Begin state
-    ActionBind.RegisterProcessHook("ExampleHook", function(input_object: InputObject)
-	    return input_object.UserInputState ~= Enum.UserInputState.Begin
-    end)
+    ActionBind.DeregisterProcessHook("ExampleHook")
     ```
 ---
 
