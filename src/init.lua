@@ -3,8 +3,10 @@
 local ActionBind = {}
 
 local PlayersService = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local HttpService = game:GetService("HttpService")
 local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ContextActionService = game:GetService("ContextActionService")
 local runtimeServer = game:GetService("RunService"):IsServer()
 
 export type ActionCallback = (action_name: string, input_state: Enum.UserInputState, input_object: InputObject) -> ()
@@ -28,6 +30,7 @@ local queueInputTimes: {[string]: {number}} = {}
 
 local activateBinds: {Enum.KeyCode} = {}
 local binds: {Bind} = {}
+local bindButtonGuidMap: {[Bind]: string} = {} -- This isnt put in the bind itself since then people can mess with it and cause issues
 local localPlayer = PlayersService.LocalPlayer
 
 local function KeycodeFromPlayerAction(player_action: Enum.PlayerActions)
@@ -150,9 +153,23 @@ local function OnInputChanged(input: InputObject, game_processed: boolean)
 end
 
 local function CleanBind(bind: Bind)
+	
+	if bindButtonGuidMap[bind] then
+		
+		local button_guid = bindButtonGuidMap[bind]
+		bindButtonGuidMap[bind] = nil
+		
+		ContextActionService:UnbindAction(button_guid)
+	end
 
 	table.clear(bind.ActionInputs)
 	table.clear(bind)
+	table.freeze(bind)
+end
+
+local function ButtonCallback(guid: string, input_state: Enum.UserInputState, input_object: InputObject)
+	
+	DoBind(input_object, false)
 end
 
 -- Wraps BindActionAtPriority
@@ -182,12 +199,20 @@ function ActionBind.BindActionAtPriority(action_name: string, callback: ActionCa
 
 	table.insert(binds, bind)
 	--TODO implement touch button
+	
+	if create_touch_button then
+		
+		local button_guid = `{HttpService:GenerateGUID(false)}{action_name}`
+		bindButtonGuidMap[bind] = button_guid
+		
+		ContextActionService:BindAction(button_guid, ButtonCallback, true)
+	end
 
 	return bind
 end
 
 -- Unbinds an action, stopping it from being fired
-function ActionBind.UnbindAction(action: string | Bind) --TODO add asserts
+function ActionBind.UnbindAction(action: string | Bind)
 
 	if type(action) == "string" then
 
@@ -200,10 +225,22 @@ function ActionBind.UnbindAction(action: string | Bind) --TODO add asserts
 			end
 		end
 	else
-
-		table.remove(binds, table.find(binds, action))
+		
+		local bind = assert(table.find(binds, action), "Invalid bind")
+		table.remove(binds, bind)
 		CleanBind(action)
 	end
+end
+
+-- Unbinds all actions
+function ActionBind.UnbindAllActions()
+
+	for _, bind in binds do
+		
+		CleanBind(bind)
+	end
+	
+	table.clear(binds)
 end
 
 -- guh
@@ -291,6 +328,9 @@ function ActionBind.DeregisterQueueHook(tag: string)
 	queueInputs[tag] = nil
 	queueInputTimes[tag] = nil
 end
+
+-- Button wrapper gurger stuff
+
 
 --[[
 -- Example process hook that blocks all inputs that are not in the Begin state
