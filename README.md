@@ -223,6 +223,7 @@ Simulates an input, running it through input hooks.
 ### BindActionAtPriority()
 
 Binds a callback to all passed through inputs at a specific priority, the callback will be ran in order of lowest-highest priority. Returns a Bind
+Also creates a TouchButton if create_touch_button is true
 Callbacks only run when gameprocessed and all registered process hooks are false.
 
   - **Type**
@@ -254,7 +255,7 @@ Callbacks only run when gameprocessed and all registered process hooks are false
 
 ### UnbindAction()
 
-Unbinds an action, clearing it from memory and preventing its callback from running again.
+Unbinds an action, clearing it from memory and preventing its callback from running again, also removes its TouchButton if it has one.
 When passing a string, it will unbind every action which has a matching name.
 
   - **Type**
